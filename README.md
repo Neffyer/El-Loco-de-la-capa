@@ -17,31 +17,31 @@ Make your way up to the top of the level and survive de forests' dangers
 
 ## Key Features
 
- - {Double jump}
- - {Various animations}
- - {debug mode and god mode}
- - {Loading and saving states}
- - {VFX and ambient music}
- - {Parallax}
- - {Moving enemies and dangerous spikes}
- - {Dying by spikes and enemies}
- - {Attack animation}
+ - Double jump
+ - Various animations
+ - debug mode and god mode
+ - Loading and saving states
+ - VFX and ambient music
+ - Parallax
+ - Moving enemies and dangerous spikes
+ - Dying by spikes and enemies
+ - Attack animation
 
 ## Controls
 
- - {W = Jump}
- - {A = Run to the left}
- - {D = Run to the right}
- - {R = Attack}
- - {UP ARROW = Move camera up}
- - {DOWN ARROW  = Move camera down}
- - {LEFT ARROW = Move camera to the left}
- - {RIGHT ARROW = Move camera to the right}
- - {F3 = restart level}
- - {F5 = Save state}
- - {F6 = Load state}
- - {F9 = View colliders}
- - {F10 = God Mode}
+ - W = Jump
+ - A = Run to the left
+ - D = Run to the right
+ - R = Attack
+ - UP ARROW = Move camera up
+ - DOWN ARROW  = Move camera down
+ - LEFT ARROW = Move camera to the left
+ - RIGHT ARROW = Move camera to the right
+ - F3 = restart level
+ - F5 = Save state
+ - F6 = Load state
+ - F9 = View colliders
+ - F10 = God Mode
 
 ## License
 
