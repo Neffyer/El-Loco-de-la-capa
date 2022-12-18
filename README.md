@@ -1,19 +1,19 @@
-# {El loco de la capa}
+# El loco de la capa
 
 ## Developers
 
- - {Joel Maldonado} - {Art and level designer, programmer and VFX}
- - {Jan Liria} - {Art and level designer, programmer and VFX}
+ - Joel Maldonado - Art and level designer, programmer and VFX
+ - Jan Liria - Art and level designer, programmer and VFX
 
 ## Game Description
 
-{You are a crazy hooded outlaw who's running away from your hometown, which is now ruled by 
+You are a crazy hooded outlaw who's running away from your hometown, which is now ruled by 
 fascists who are looking for you. Your only option is to run into the deep woods in which you
-will have to be extremely carefull for its complicated trail and its hidden dangers. Beware!}
+will have to be extremely carefull for its complicated trail and its hidden dangers. Beware!
 
 ## Objective
 
-{Make your way up to the top of the level and survive de forests' dangers}
+Make your way up to the top of the level and survive de forests' dangers
 
 ## Key Features
 
