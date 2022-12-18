@@ -33,6 +33,8 @@ Make your way up to the top of the level and survive de forests' dangers
  - A = Run to the left
  - D = Run to the right
  - R = Attack
+ - ENTER/RETURN = Next screen
+ - Z = Home screen directly
  - UP ARROW = Move camera up
  - DOWN ARROW  = Move camera down
  - LEFT ARROW = Move camera to the left
@@ -42,6 +44,17 @@ Make your way up to the top of the level and survive de forests' dangers
  - F6 = Load state
  - F9 = View colliders
  - F10 = God Mode
+
+## New Features and improvoments
+ - Added game loop and scenes
+ - Created and added team logo screen
+ - Created and added menu home screen
+ - Created and added death screen
+ - Created and added win screen
+ - Added new entities
+ - Removed 'X' trigger to display animation, instead added new death condition (triggered by spikes and enemies colliders) which displays it
+ - Added an attack trigger
+
 
 ## License
 
