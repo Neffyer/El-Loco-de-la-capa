@@ -8,7 +8,9 @@
 #include "Log.h"
 #include "Render.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Window.h"
+#include "Scene.h"
 #include "Box2D/Box2D/Box2D.h"
 
 #ifdef _DEBUG
@@ -17,7 +19,7 @@
 #pragma comment( lib, "../Game/Source/External/Box2D/libx86/ReleaseLib/Box2D.lib" )
 #endif
 
-Physics::Physics() : Module()
+Physics::Physics(bool startEnabled) : Module(startEnabled)
 {
 	world = NULL;
 	mouse_joint = NULL;
@@ -34,7 +36,11 @@ bool Physics::Start()
 	LOG("Creating Physics 2D environment");
 
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
+
+	// Set this module as a listener for contacts
+	world->SetContactListener(this);
 	
+	debug = false;
 
 	return true;
 }
@@ -121,7 +127,7 @@ PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 	return pbody;
 }
 
-PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bodyType type)
+PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bodyType type, ColliderType ctype)
 {
 	b2BodyDef body;
 
@@ -145,6 +151,7 @@ PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bo
 
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
+	pbody->ctype = ctype;
 	b->SetUserData(pbody);
 	pbody->width = width;
 	pbody->height = height;
@@ -152,7 +159,7 @@ PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bo
 	return pbody;
 }
 
-PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType type)
+PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType type, ColliderType ctype)
 {
 	b2BodyDef body;
 
@@ -183,11 +190,10 @@ PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType typ
 	delete p;
 
 	PhysBody* pbody = new PhysBody();
+	pbody->ctype = ctype;
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
-
-	pbody->ctype = ColliderType::PLATFORM;
 
 	return pbody;
 }
@@ -199,22 +205,6 @@ bool Physics::PostUpdate()
 	
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
-	
-	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		gameStart = true;
-	}
-
-	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && gameStart){
-		if (!debug)
-		{
-			debug = true;
-		}
-		else
-		{
-			debug = false;
-		}
-	}
 
 	if (debug)
 	{

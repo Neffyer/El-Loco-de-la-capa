@@ -1,5 +1,6 @@
 #pragma once
 #include "Module.h"
+#include "Entity.h"
 
 #include "Box2D/Box2D/Box2D.h"
 
@@ -28,9 +29,12 @@ enum bodyType {
 enum class ColliderType {
 	PLAYER,
 	ITEM,
+	ENEMY,
+	ATTACK,
 	PLATFORM,
 	WALL,
 	DEATH,
+	SALIR,
 	UNKNOWN
 	// ..
 };
@@ -50,7 +54,7 @@ public:
 public:
 	int width, height;
 	b2Body* body;
-	Module* listener;
+	Entity* listener;
 	ColliderType ctype;
 };
 
@@ -58,7 +62,7 @@ public:
 class Physics : public Module, public b2ContactListener // TODO
 {
 public:
-	Physics();
+	Physics(bool startEnabled);
 	~Physics();
 
 	bool Start();
@@ -69,8 +73,8 @@ public:
 	
 	PhysBody* CreateRectangle(int x, int y, int width, int height, bodyType type);
 	PhysBody* CreateCircle(int x, int y, int radious, bodyType type);
-	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type);
-	PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type);
+	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type, ColliderType ctype);
+	PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type, ColliderType ctype);
 	b2RevoluteJoint* CreateRevoluteJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, float angle, bool collideConnected, bool enableLimit);
 	b2PrismaticJoint* CreatePrismaticJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, b2Vec2 axys, float maxHeight, bool collideConnected, bool enableLimit);
 	b2WeldJoint* CreateWeldJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, float angle, bool collideConnected, bool enableLimit);
@@ -79,10 +83,9 @@ public:
 	void BeginContact(b2Contact* contact);
 
 	b2World* world;
-	bool debug = false;
+	bool debug;
 
 private:
-	bool gameStart = false;
 
 	b2MouseJoint* mouse_joint;
 	b2Body* ground;

@@ -8,21 +8,22 @@
 class App;
 // L07 TODO 2: Add Physics Module
 class PhysBody;
+
 class Module
 {
 public:
 
-	Module() : active(false)
-	{}
+	Module(bool startEnabled) : active(false), isEnabled(startEnabled) {}
 
 	void Init()
 	{
-		active = true;
+		active = isEnabled;
 	}
 
 	// Called before render is available
 	virtual bool Awake(pugi::xml_node&)
 	{
+
 		return true;
 	}
 
@@ -68,13 +69,40 @@ public:
 	}
 
 	// L07 TODO 2: Add Physics Module
-	virtual void OnCollision(PhysBody* bodyA, PhysBody* bodyB) {
-
+	virtual void OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+	{
 	}
+
+	void Enable()
+	{
+		if (!isEnabled)
+		{
+
+			active = true;
+			isEnabled = true;
+
+		}
+	}
+
+	void Disable()
+	{
+		if (isEnabled)
+		{
+
+			active = false;
+			isEnabled = false;
+
+		}
+	}
+
+	inline bool IsEnabled() const { return isEnabled; }
+
 public:
 
 	SString name;
 	bool active;
+
+	bool isEnabled;
 
 };
 

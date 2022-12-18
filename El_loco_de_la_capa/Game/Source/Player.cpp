@@ -11,23 +11,42 @@
 #include "Physics.h"
 #include "Window.h"
 #include "Animation.h"
+#include "FadeToBlack .h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name.Create("Player");
+
+}
+
+Player::~Player() {
+
+}
+
+bool Player::Awake() {
+
+	//L02: DONE 1: Initialize Player parameters
+	//pos = position;
+	//texturePath = "Assets/Textures/player/idle1.png";
+
+	//L02: DONE 5: Get Player parameters from XML
+	position.x = parameters.attribute("x").as_int();
+	position.y = parameters.attribute("y").as_int();
+	texturePath = parameters.attribute("texturepath").as_string();
+
 	for (int i = 0; i < 8; i++) {
 
 		PlayerIdleRight.PushBack({ 32 * (0 + i), 0, 32, 32 });
 	}
 	PlayerIdleRight.loop = true;
-	PlayerIdleRight.speed = 0.05f;
+	PlayerIdleRight.speed = 0.1f;
 
 	for (int i = 0; i < 8; i++) {
 
 		PlayerIdleLeft.PushBack({ 32 * (0 + i), 32, 32, 32 });
 	}
 	PlayerIdleLeft.loop = true;
-	PlayerIdleLeft.speed = 0.05f;
+	PlayerIdleLeft.speed = 0.1f;
 
 	for (int i = 0; i < 8; i++) {
 
@@ -35,7 +54,7 @@ Player::Player() : Entity(EntityType::PLAYER)
 	}
 	RunningRight.loop = true;
 	RunningRight.speed = 0.2f;
-	
+
 	for (int i = 0; i < 8; i++) {
 
 		RunningLeft.PushBack({ 32 * (0 + i), 32 * 3, 32, 32 });
@@ -48,14 +67,14 @@ Player::Player() : Entity(EntityType::PLAYER)
 		StartJumpRight.PushBack({ 32 * (0 + i), 32 * 4, 32, 32 });
 	}
 	StartJumpRight.loop = true;
-	StartJumpRight.speed = 0.2f;
+	StartJumpRight.speed = 0.00001f;
 
 	for (int i = 0; i < 5; i++) {
 
 		StartJumpLeft.PushBack({ 32 * (0 + i), 32 * 5, 32, 32 });
 	}
 	StartJumpLeft.loop = true;
-	StartJumpLeft.speed = 0.2f;
+	StartJumpLeft.speed = 0.05f;
 
 	FlyRight.PushBack({ 32 * 5, 32 * 4, 32, 32 });
 	FlyRight.loop = true;
@@ -84,194 +103,222 @@ Player::Player() : Entity(EntityType::PLAYER)
 		DieRight.PushBack({ 32 * (0 + i), 32 * 6, 32, 32 });
 	}
 	DieRight.loop = false;
-	DieRight.speed = 0.2f;
-	DieRight.pingpong = true;
+	DieRight.speed = 0.1f;
 
 	for (int i = 0; i < 8; i++) {
 
 		DieLeft.PushBack({ 32 * (0 + i), 32 * 7, 32, 32 });
 	}
 	DieLeft.loop = false;
-	DieLeft.speed = 0.2f;
-	DieLeft.pingpong = true;
-}
+	DieLeft.speed = 0.1f;
 
-Player::~Player() {
+	for (int i = 0; i < 8; i++) {
 
-}
+		PlayerAttackRight.PushBack({ 32 * (0 + i), 32 * 8, 32, 32 });
+	}
+	PlayerAttackRight.loop = false;
+	PlayerAttackRight.speed = 0.1f;
 
-bool Player::Awake() {
+	for (int i = 0; i < 8; i++) {
 
-	//L02: DONE 1: Initialize Player parameters
-	//pos = position;
-	//texturePath = "Assets/Textures/player/idle1.png";
+		PlayerAttackLeft.PushBack({ 32 * (0 + i), 32 * 9, 32, 32 });
+	}
+	PlayerAttackLeft.loop = false;
+	PlayerAttackLeft.speed = 0.1f;
 
-	//L02: DONE 5: Get Player parameters from XML
-	position.x = parameters.attribute("x").as_int();
-	position.y = parameters.attribute("y").as_int();
-	texturePath = parameters.attribute("texturepath").as_string();
+	godMode = false;
 
 	return true;
 }
 
 bool Player::Start() {
 	
-	
-
 	//initilize textures
 	texture = app->tex->Load(texturePath);
 
 	// L07 TODO 5: Add physics to the player - initialize physics body
-	pbody = app->physics->CreateCircle(position.x, position.y, 14, bodyType::DYNAMIC);
+	pbody = app->physics->CreateCircle(position.x, position.y, 13, bodyType::DYNAMIC);
+
+	pbody->listener = this;
+	pbody->ctype = ColliderType::PLAYER;
 
 	startx = position.x;
 	starty = position.y;
 
-	jump = 0;
-	
-	jumpFx = app->audio->LoadFx("Assets/Audio/Fx/JumpFx.wav");
+	jumps = 0;
 
-	
+	playerAlive = true;
+
+	jumpFx = app->audio->LoadFx("Assets/Audio/Fx/JumpFx.wav");
+	attackFx = app->audio->LoadFx("Assets/Audio/Fx/AttackFx.wav");
+
 	return true;
 }
 
 
 bool Player::Update()
 {
-
-
+	
 	// L07 TODO 5: Add physics to the player - updated player position using physics
 
-	if (idle) {
-		if (flying)
-		{
-			currentAnimation = &FlyRight;
-		}
-		else
-		{
-			currentAnimation = &PlayerIdleRight;
-		}
-	}
-	else {
-		if (flying)
-		{
-			currentAnimation = &FlyLeft;
-		}
-		else
-		{
-			currentAnimation = &PlayerIdleLeft;
-		}
-
-	}
-
-	if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		gameStart = true;
-	}
-	
 	if (!godMode) {
-		if (gameStart)
-		{
-			if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
 
-				app->render->camera.x = 0;
-				app->render->camera.y = 0;
-				app->scene->player->pbody->body->SetTransform({ PIXEL_TO_METERS(startx),PIXEL_TO_METERS(starty) }, 0);
+		b2Vec2 velocity = { 0, pbody->body->GetLinearVelocity().y };
+
+		if (playerAlive) {
+
+			if (idle) {
+
+				if (onAir) {
+
+					currentAnimation = &FlyRight;
+				}
+				else {
+
+					currentAnimation = &PlayerIdleRight;
+				}
+			}
+			else {
+
+				if (onAir) {
+
+					currentAnimation = &FlyLeft;
+				}
+				else {
+
+					currentAnimation = &PlayerIdleLeft;
+				}
 			}
 
-			b2Vec2 velocity = { 0, pbody->body->GetLinearVelocity().y };
-			//L02: DONE 4: modify the position of the player using arrow keys and render the texture
+			if (app->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
 
-			if (app->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT) {
+				app->audio->PlayFx(attackFx);
+
+				attacking = true;
+				finish = false;
+
+			}
+
+			if (!finish) {
+
 				if (idle) {
 
-					currentAnimation = &DieRight;
+					currentAnimation = &PlayerAttackRight;
 				}
-				else
-				{
-					currentAnimation = &DieLeft;
+				else {
+
+					currentAnimation = &PlayerAttackLeft;
 				}
+
+				if (currentAnimation->HasFinished()) {
+
+					currentAnimation->Reset();
+					attacking = false;
+					finish = true;
+				}
+
 			}
 
-			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+			if (attacking == false) {
 
-				idle = false;
+				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 
-				velocity = { -speed, pbody->body->GetLinearVelocity().y };
+					idle = false;
 
-				if (currentAnimation != &RunningLeft) {
-
-					currentAnimation = &RunningLeft;
-				}
-			}
-
-			if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-
-				idle = true;
-
-				velocity = { speed, pbody->body->GetLinearVelocity().y };
-
-				if (currentAnimation != &RunningRight) {
-
-					currentAnimation = &RunningRight;
-				}
-			}
-
-			/*if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-
-				if (jump < 2) {
-					velocity = { pbody->body->GetLinearVelocity().x, -impulse };
-					jump++;
-
-					if (idle)
+					velocity = { -speed, pbody->body->GetLinearVelocity().y };
+					if (!onAir)
 					{
-						currentAnimation = &StartJumpRight;
+						if (currentAnimation != &RunningLeft) {
+
+							currentAnimation = &RunningLeft;
+						}
 					}
-					else
+				}
+
+				if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+
+					idle = true;
+
+					velocity = { speed, pbody->body->GetLinearVelocity().y };
+
+					if (!onAir)
 					{
-						currentAnimation = &StartJumpLeft;
+						if (currentAnimation != &RunningRight) {
+
+							currentAnimation = &RunningRight;
+						}
+					}
+				}
+
+				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+
+					if (jumps < 2) {
+						onAir = true;
+						app->audio->PlayFx(jumpFx);
+						if (jumps < 1) {
+							velocity = { pbody->body->GetLinearVelocity().x, -impulse };
+						}
+						else {
+							velocity = { pbody->body->GetLinearVelocity().x, -impulse * 3 / 4 };
+						}
+
+						jumps++;
+
+						if (idle)
+						{
+							currentAnimation = &StartJumpRight;
+						}
+						else
+						{
+							currentAnimation = &StartJumpLeft;
+						}
+
 					}
 
 				}
-
-			}*/
-
-
-			if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-
-				app->audio->PlayFx(jumpFx);
-
-				velocity = { pbody->body->GetLinearVelocity().x, -impulse };
-
-
-				if (idle)
-				{
-					currentAnimation = &StartJumpRight;
-				}
-				else
-				{
-					currentAnimation = &StartJumpLeft;
-				}
-
 
 			}
-			position.x = METERS_TO_PIXELS(pbody->body->GetTransform().p.x) - 32 / 2;
-			position.y = METERS_TO_PIXELS(pbody->body->GetTransform().p.y) - 32 / 2;
 
-			pbody->body->SetLinearVelocity(velocity);
-
-			currentAnimation->Update();
-			SDL_Rect rect = currentAnimation->GetCurrentFrame();
-			app->render->DrawTexture(texture, position.x, position.y, &rect);
 		}
-	}
+		else {
 
+			if (idle) currentAnimation = &DieRight;
+			else currentAnimation = &DieLeft;
+			if (currentAnimation->HasFinished()) {
+
+				app->fadeToBlack->Fade((Module*)app->scene, (Module*)app->sceneDeath, 0);
+
+			}
+
+		}
+
+
+		if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
+
+			app->render->camera.x = 0;
+			app->render->camera.y = 0;
+			app->scene->player->playerAlive = true;
+			app->scene->player->idle = true;
+			app->scene->player->pbody->body->SetTransform({ PIXEL_TO_METERS(startx),PIXEL_TO_METERS(starty) }, 0);
+		}
+
+		position.x = METERS_TO_PIXELS(pbody->body->GetTransform().p.x) - 32 / 2;
+		position.y = METERS_TO_PIXELS(pbody->body->GetTransform().p.y) - 32 / 2;
+
+		pbody->body->SetLinearVelocity(velocity);
+
+		currentAnimation->Update();
+		SDL_Rect rect = currentAnimation->GetCurrentFrame();
+		app->render->DrawTexture(texture, position.x, position.y, &rect);
+	}
 	else {
 
 		if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
 
 			app->render->camera.x = 0;
 			app->render->camera.y = 0;
+			app->scene->player->playerAlive = true;
+			app->scene->player->idle = true;
 			app->scene->player->pbody->body->SetTransform({ PIXEL_TO_METERS(startx),PIXEL_TO_METERS(starty) }, 0);
 		}
 
@@ -310,6 +357,7 @@ bool Player::Update()
 
 		}
 
+
 	}
 
 	currentAnimation->Update();
@@ -321,7 +369,6 @@ bool Player::Update()
 	return true;
 }
 
-
 // L07 DONE 6: Define OnCollision function for the player. Check the virtual function on Entity class
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
@@ -331,29 +378,29 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		app->audio->PlayFx(pickCoinFxId);
+		break;
+	case ColliderType::ENEMY:
+		LOG("Collision ENEMY");
+		if (!godMode) playerAlive = false;
 		break;
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
-		jump = 0;
-		flying = false;
+		jumps = 0;
+		onAir = false;
 		break;
 	case ColliderType::WALL:
 		LOG("Collision WALL");
 		break;
 	case ColliderType::DEATH:
 		LOG("Collision DEATH");
-		if (idle) {
-
-			currentAnimation = &DieRight;
-		}
-		else
-		{
-			currentAnimation = &DieLeft;
-		}
+		if(!godMode) playerAlive = false;
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
+		break;
+	case ColliderType::SALIR:
+		LOG("Collision UNKNOWN");
+		app->fadeToBlack->Fade((Module*)app->scene, (Module*)app->sceneWin, 0);
 		break;
 	}
 }

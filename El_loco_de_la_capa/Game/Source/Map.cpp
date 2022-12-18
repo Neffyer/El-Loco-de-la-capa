@@ -10,7 +10,7 @@
 #include <math.h>
 #include "SDL_image/include/SDL_image.h"
 
-Map::Map() : Module(), mapLoaded(false)
+Map::Map(bool startEnabled) : Module(startEnabled), mapLoaded(false)
 {
     name.Create("map");
 }
@@ -381,21 +381,48 @@ bool Map::LoadObjectLayer(pugi::xml_node& node, MapLayer* objectLayer) {
 
     for (objectNode = node.child("object"); objectNode && ret; objectNode = objectNode.next_sibling("object"))
     {
-        int x = objectNode.attribute("x").as_int();
-        int y = objectNode.attribute("y").as_int();
-
         pugi::xml_node poly = objectNode.child("polygon");
 
-        std::string points = poly.attribute("points").as_string();
+        if (poly)
+        {
+            int x = objectNode.attribute("x").as_int();
+            int y = objectNode.attribute("y").as_int();
 
-        int length = FindVertices(points, ',') * 2;
 
-        int* converted_points = ConvertPolygonVerticesToArray(points, length);
+            std::string points = poly.attribute("points").as_string();
 
-        app->physics->CreateChain(x, y, converted_points, length, bodyType::STATIC);
+            int length = FindVertices(points, ',') * 2;
 
-        delete[] converted_points;
+            int* converted_points = ConvertPolygonVerticesToArray(points, length);
 
+            if (objectLayer->properties.GetProperty("PLATFORM") != NULL && objectLayer->properties.GetProperty("PLATFORM")->value)
+            {
+                app->physics->CreateChain(x, y, converted_points, length, bodyType::STATIC, ColliderType::PLATFORM);
+            }
+            if (objectLayer->properties.GetProperty("WALL") != NULL && objectLayer->properties.GetProperty("WALL")->value)
+            {
+                app->physics->CreateChain(x, y, converted_points, length, bodyType::STATIC, ColliderType::WALL);
+            }
+            if (objectLayer->properties.GetProperty("SALIR") != NULL && objectLayer->properties.GetProperty("SALIR")->value)
+            {
+                app->physics->CreateChain(x, y, converted_points, length, bodyType::STATIC, ColliderType::SALIR);
+            }
+            
+
+            delete[] converted_points;
+
+        }
+        else
+        {
+            int x = objectNode.attribute("x").as_int();
+            int y = objectNode.attribute("y").as_int();
+
+            int w = objectNode.attribute("width").as_int();
+            int h = objectNode.attribute("height").as_int();
+
+            app->physics->CreateRectangleSensor(x + w / 2, y + h / 2, w, h, bodyType::STATIC, ColliderType::DEATH);
+
+        }
     }
 
     return ret;

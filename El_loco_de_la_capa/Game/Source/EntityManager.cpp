@@ -1,5 +1,6 @@
 #include "EntityManager.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Item.h"
 #include "App.h"
 #include "Textures.h"
@@ -8,7 +9,7 @@
 #include "Defs.h"
 #include "Log.h"
 
-EntityManager::EntityManager() : Module()
+EntityManager::EntityManager(bool startEnabled) : Module(startEnabled)
 {
 	name.Create("entitymanager");
 }
@@ -87,6 +88,10 @@ Entity* EntityManager::CreateEntity(EntityType type)
 
 	case EntityType::PLAYER:
 		entity = new Player();
+		break;
+
+	case EntityType::ENEMY:
+		entity = new Enemy();
 		break;
 
 	case EntityType::ITEM:

@@ -1,6 +1,6 @@
 <config>
   <app>
-    <title>Game Development Testbed</title>
+    <title>El loco de la capa</title>
     <organization>UPC</organization>
   </app>
 
@@ -23,7 +23,9 @@
 
   <!-- L02: DONE: Add an element for the entity manager and add the player parameters -->
   <scene>
-    <player x="125" y="540" texturepath="Assets/Textures/player1.png"/>
+    <player x="125" y="560" texturepath="Assets/Textures/player1.png"/>
+	<enemy x="74" y="100" texturepath ="Assets/Textures/ramsesSprite.png"/>
+	<bat x="300" y="500" texturepath ="Assets/Textures/enemyFly.png"/>
   </scene>
 
   <map>

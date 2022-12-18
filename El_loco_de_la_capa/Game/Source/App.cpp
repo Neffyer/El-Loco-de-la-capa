@@ -4,10 +4,17 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Audio.h"
+#include "Physics.h"
+#include "FadeToBlack .h"
+#include "Pathfinding.h"
+#include "SceneLogo.h"
+#include "SceneTitle.h"
 #include "Scene.h"
+#include "SceneWin.h"
+#include "SceneDeath.h"
 #include "EntityManager.h"
 #include "Map.h"
-#include "Physics.h"
+
 
 #include "Defs.h"
 #include "Log.h"
@@ -20,33 +27,40 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 {
 	frames = 0;
 
-	input = new Input();
-	win = new Window();
-	render = new Render();
-	tex = new Textures();
-	audio = new Audio();
-	//L07 TODO 2: Add Physics module
-	physics = new Physics();
-	scene = new Scene();
-	entityManager = new EntityManager();
-	map = new Map();
+	input = new Input(true);
+	win = new Window(true);
+	render = new Render(true);
+	tex = new Textures(true);
+	audio = new Audio(true);
+	physics = new Physics(true);
+	fadeToBlack = new FadeToBlack(true);
+	pathfinding = new PathFinding(true);
+	sceneLogo = new SceneLogo(true);
+	sceneTitle = new SceneTitle(false);
+	scene = new Scene(false);
+	sceneWin = new SceneWin(false);
+	sceneDeath = new SceneDeath(false);
+	entityManager = new EntityManager(true);
+	map = new Map(true);
 
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
 	AddModule(input);
 	AddModule(win);
+	AddModule(render);
 	AddModule(tex);
 	AddModule(audio);
-	//L07 TODO 2: Add Physics module
 	AddModule(physics);
+	AddModule(fadeToBlack);
+	AddModule(pathfinding);
+	AddModule(sceneLogo);
+	AddModule(sceneTitle);
 	AddModule(scene);
+	AddModule(sceneWin);
+	AddModule(sceneDeath);
 	AddModule(entityManager);
 	AddModule(map);
-
-
-	// Render last to swap buffer
-	AddModule(render);
 }
 
 // Destructor

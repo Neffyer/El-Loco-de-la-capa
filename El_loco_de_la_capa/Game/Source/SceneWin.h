@@ -1,21 +1,19 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
+#pragma once
 
 #include "Module.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "Item.h"
 
 struct SDL_Texture;
 
-class Scene : public Module
+class SceneWin : public Module
 {
 public:
 
-	Scene(bool startEnabled);
+	SceneWin(bool startEnabled);
 
 	// Destructor
-	virtual ~Scene();
+	virtual ~SceneWin();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node& config);
@@ -37,20 +35,10 @@ public:
 
 public:
 
-	//L02: DONE 3: Declare a Player attribute 
-	Player* player;
-	Enemy* enemy;
-
-	SDL_Texture* blackScreen;
-	SDL_Texture* BKG1;
-	SDL_Texture* BKG2;
-	SDL_Texture* BKG3;
-
-	bool MusicOn;
+	bool enableMusic;
 
 private:
-	SDL_Texture* img;
+
+	SDL_Texture* winScreen;
 
 };
-
-#endif // __SCENE_H__

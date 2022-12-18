@@ -2,15 +2,18 @@
 <save_state>
 	<input />
 	<window />
-	<textures />
-	<audio />
-	<:anonymous />
-	<scene />
-	<entitymanager>
-		<player x="238" y="545" />
-	</entitymanager>
-	<map />
 	<renderer>
 		<camera x="0" y="0" />
 	</renderer>
+	<textures />
+	<audio />
+	<:anonymous />
+	<:anonymous />
+	<sceneLogo />
+	<sceneTitle />
+	<scene />
+	<entitymanager>
+		<player x="429" y="94" />
+	</entitymanager>
+	<map />
 </save_state>

@@ -10,16 +10,21 @@
 #define SAVE_STATE_FILENAME "save_game.xml"
 
 // Modules
-class Window;
 class Input;
+class Window;
 class Render;
 class Textures;
 class Audio;
+class Physics;
+class FadeToBlack;
+class PathFinding;
+class SceneLogo;
+class SceneTitle;
 class Scene;
+class SceneWin;
+class SceneDeath;
 class EntityManager;
 class Map;
-//L07 TODO 2: Add Physics module
-class Physics;
 
 class App
 {
@@ -86,11 +91,17 @@ public:
 	Render* render;
 	Textures* tex;
 	Audio* audio;
+	Physics* physics;
+	FadeToBlack* fadeToBlack;
+	PathFinding* pathfinding;
+	SceneLogo* sceneLogo;
+	SceneTitle* sceneTitle;
 	Scene* scene;
+	SceneWin* sceneWin;
+	SceneDeath* sceneDeath;
 	EntityManager* entityManager;
 	Map* map;
-	//L07 TODO 2: Add Physics module
-	Physics* physics;
+	
 private:
 
 	int argc;
