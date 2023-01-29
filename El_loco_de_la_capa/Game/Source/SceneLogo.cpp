@@ -69,6 +69,7 @@ bool SceneLogo::Update(float dt)
 		app->fadeToBlack->Fade(this, (Module*)app->sceneTitle, dt);
 		app->render->camera.x = 0;
 		app->render->camera.y = 0;
+		app->scene->player->hits = 0;
 		app->scene->player->pbody->body->SetTransform({ PIXEL_TO_METERS(app->scene->player->startx),PIXEL_TO_METERS(app->scene->player->starty) }, 0);
 
 	}

@@ -119,9 +119,6 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	switch (physB->ctype)
 	{
-	case ColliderType::ITEM:
-		LOG("Collision ITEM");
-		break;
 	case ColliderType::ATTACK:
 		LOG("Collision ATTACK");
 		enemyAlive = false;

@@ -7,6 +7,13 @@
 
 struct SDL_Texture;
 
+enum class ItemType {
+
+	COIN,
+	LIFE
+
+};
+
 class Item : public Entity
 {
 public:
@@ -22,6 +29,8 @@ public:
 
 	bool CleanUp();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
 public:
 
 	bool isPicked = false;
@@ -33,6 +42,7 @@ private:
 
 	//TODO 4: Add a physics to an item
 	PhysBody* pbody;
+	ItemType type;
 };
 
 #endif // __ITEM_H__

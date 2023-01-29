@@ -3,6 +3,8 @@
 
 #include "Module.h"
 #include "List.h"
+#include "PerfTimer.h"
+#include "Timer.h"
 
 #include "PugiXml/src/pugixml.hpp"
 
@@ -102,6 +104,9 @@ public:
 	EntityManager* entityManager;
 	Map* map;
 	
+	uint frames;
+	float dt;
+
 private:
 
 	int argc;
@@ -117,12 +122,30 @@ private:
 	pugi::xml_document configFile;
 	pugi::xml_node configNode;
 
-	uint frames;
-	float dt;
-
 	// L03: DONE 1: Create control variables to control that the real Load and Save happens at the end of the frame
-    bool saveGameRequested;
+	bool saveGameRequested;
 	bool loadGameRequested;
+
+	// L13: TODO 4: Calculate some timing measures
+	// required variables are provided:
+	Timer timer;
+	PerfTimer ptimer;
+
+	Timer startupTime;
+	Timer frameTime;
+	Timer lastSecFrameTime;
+
+	uint64 frameCount = 0;
+	uint32 framesPerSecond = 0;
+	uint32 lastSecFrameCount = 0;
+
+	float averageFps = 0.0f;
+	float secondsSinceStartup = 0.0f;
+
+	uint32 maxFrameDuration = 0;
+
+	bool vsyncActive;
+
 };
 
 extern App* app;

@@ -5,6 +5,7 @@
 #include "Render.h"
 #include "Window.h"
 #include "Scene.h"
+#include "Item.h"
 #include "EntityManager.h"
 #include "Map.h"
 #include "Physics.h"
@@ -72,6 +73,9 @@ bool Scene::Start()
 	app->win->SetTitle(title.GetString());
 
 	MusicOn = true;
+
+	playerUI = app->tex->Load("Assets/UI/PlayerUI.png");
+	coinsUI = app->tex->Load("Assets/UI/coinsNum.png");
 
 	return true;
 }
@@ -143,7 +147,6 @@ bool Scene::Update(float dt)
 
 	//app->render->DrawTexture(img, 380, 100); // Placeholder not needed any more
 
-
 	app->render->DrawTexture(BKG1, -200, 0, NULL, 1.3f);
 	app->render->DrawTexture(BKG2, -200, 0, NULL, 1.2f);
 	app->render->DrawTexture(BKG3, -200, 0, NULL, 1.1f);
@@ -152,6 +155,13 @@ bool Scene::Update(float dt)
 
 	app->map->Draw();
 	app->render->DrawTexture(blackScreen, app->win->screenSurface->w, app->win->screenSurface->h);
+
+	SDL_Rect rect = { 0, 0 + 54 * player->hits, 153, 54 };
+	app->render->DrawTexture(playerUI, 25, 25, &rect);
+
+	SDL_Rect nums = { 0, 0 + 17 * player->coins, 12, 17 };
+	app->render->DrawTexture(coinsUI, 100, 60, &nums);
+
 	return true;
 }
 

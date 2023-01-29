@@ -9,11 +9,15 @@
 	<audio />
 	<:anonymous />
 	<:anonymous />
+	<pathfinding />
 	<sceneLogo />
 	<sceneTitle />
 	<scene />
+	<sceneWin />
+	<sceneEnding />
 	<entitymanager>
-		<player x="429" y="94" />
+		<player x="151" y="546" />
+		<enemy x="93" y="163" />
 	</entitymanager>
 	<map />
 </save_state>

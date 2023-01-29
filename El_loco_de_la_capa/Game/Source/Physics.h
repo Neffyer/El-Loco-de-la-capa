@@ -5,7 +5,7 @@
 #include "Box2D/Box2D/Box2D.h"
 
 #define GRAVITY_X 0.0f
-#define GRAVITY_Y -20.0f
+#define GRAVITY_Y -15.0f
 
 #define PIXELS_PER_METER 32.0f // if touched change METER_PER_PIXEL too
 #define METER_PER_PIXEL 0.03125f // this is 1 / PIXELS_PER_METER !
@@ -28,13 +28,15 @@ enum bodyType {
 
 enum class ColliderType {
 	PLAYER,
-	ITEM,
-	ENEMY,
 	ATTACK,
+	COIN,
+	LIFE,
 	PLATFORM,
 	WALL,
 	DEATH,
 	SALIR,
+	SENSOR,
+	ENEMY,
 	UNKNOWN
 	// ..
 };
@@ -43,7 +45,7 @@ enum class ColliderType {
 class PhysBody
 {
 public:
-	PhysBody() : listener(NULL), body(NULL)
+	PhysBody() : listener(NULL), body(NULL), ctype(ColliderType::UNKNOWN)
 	{}
 
 	void GetPosition(int& x, int& y) const;
@@ -70,17 +72,20 @@ public:
 	bool PostUpdate();
 	bool CleanUp();
 
-	
+
 	PhysBody* CreateRectangle(int x, int y, int width, int height, bodyType type);
 	PhysBody* CreateCircle(int x, int y, int radious, bodyType type);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type, ColliderType ctype);
+	PhysBody* CreateCircleSensor(int x, int y, int radious, bodyType type, ColliderType ctype);
 	PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type, ColliderType ctype);
 	b2RevoluteJoint* CreateRevoluteJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, float angle, bool collideConnected, bool enableLimit);
 	b2PrismaticJoint* CreatePrismaticJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, b2Vec2 axys, float maxHeight, bool collideConnected, bool enableLimit);
 	b2WeldJoint* CreateWeldJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, float angle, bool collideConnected, bool enableLimit);
-	
+
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
+
+	void EndContact(b2Contact* contact);
 
 	b2World* world;
 	bool debug;

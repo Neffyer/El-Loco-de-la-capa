@@ -8,7 +8,6 @@
 #include "Log.h"
 #include "Render.h"
 #include "Player.h"
-#include "Enemy.h"
 #include "Window.h"
 #include "Scene.h"
 #include "Box2D/Box2D/Box2D.h"
@@ -37,9 +36,8 @@ bool Physics::Start()
 
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 
-	// Set this module as a listener for contacts
 	world->SetContactListener(this);
-	
+
 	debug = false;
 
 	return true;
@@ -48,6 +46,8 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+	//OPTICK_EVENT();
+
 	bool ret = true;
 	world->Step(1.0f / 60.0f, 6, 2);
 
@@ -61,6 +61,8 @@ bool Physics::PreUpdate()
 				pb1->listener->OnCollision(pb1, pb2);
 		}
 	}
+
+
 
 	return ret;
 }
@@ -113,7 +115,7 @@ PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 
 	b2FixtureDef fixture;
 	fixture.shape = &circle;
-	fixture.density = 1.0f;
+	fixture.density = 2.0f;
 	b->ResetMassData();
 
 	b->CreateFixture(&fixture);
@@ -155,6 +157,38 @@ PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bo
 	b->SetUserData(pbody);
 	pbody->width = width;
 	pbody->height = height;
+
+	return pbody;
+}
+
+PhysBody* Physics::CreateCircleSensor(int x, int y, int radious, bodyType type, ColliderType ctype) {
+
+	b2BodyDef body;
+
+	if (type == DYNAMIC) body.type = b2_dynamicBody;
+	if (type == STATIC) body.type = b2_staticBody;
+	if (type == KINEMATIC) body.type = b2_kinematicBody;
+
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+	b2CircleShape circle;
+	circle.m_radius = PIXEL_TO_METERS(radious);
+
+	b2FixtureDef fixture;
+	fixture.shape = &circle;
+	fixture.density = 2.0f;
+	fixture.isSensor = true;
+	b->ResetMassData();
+
+	b->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	pbody->ctype = ctype;
+	b->SetUserData(pbody);
+	pbody->width = radious * 0.5f;
+	pbody->height = radious * 0.5f;
 
 	return pbody;
 }
@@ -201,11 +235,11 @@ PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType typ
 // 
 bool Physics::PostUpdate()
 {
+	//OPTICK_EVENT();
 	bool ret = true;
-	
+
 	// Bonus code: this will iterate all objects in the world and draw the circles
 	// You need to provide your own macro to translate meters to pixels
-
 	if (debug)
 	{
 		for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
@@ -222,6 +256,7 @@ bool Physics::PostUpdate()
 					app->win->GetWindowSize(width, height);
 					b2Vec2 pos = f->GetBody()->GetPosition();
 					app->render->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius) * app->win->GetScale(), 255, 255, 255);
+
 				}
 				break;
 
@@ -373,6 +408,18 @@ void Physics::BeginContact(b2Contact* contact)
 
 	if (physB && physB->listener != NULL)
 		physB->listener->OnCollision(physB, physA);
+}
+
+void Physics::EndContact(b2Contact* contact)
+{
+	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData();
+	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+	if (physA && physA->listener != NULL)
+		physA->listener->OnCollisionEnd(physA, physB);
+
+	if (physB && physB->listener != NULL)
+		physB->listener->OnCollisionEnd(physB, physA);
 }
 
 b2RevoluteJoint* Physics::CreateRevoluteJoint(PhysBody* A, b2Vec2 anchorA, PhysBody* B, b2Vec2 anchorB, float angle, bool collideConnected, bool enableLimit)

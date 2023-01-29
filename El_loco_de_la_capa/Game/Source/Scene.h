@@ -46,6 +46,9 @@ public:
 	SDL_Texture* BKG2;
 	SDL_Texture* BKG3;
 
+	SDL_Texture* playerUI;
+	SDL_Texture* coinsUI;
+
 	bool MusicOn;
 
 private:

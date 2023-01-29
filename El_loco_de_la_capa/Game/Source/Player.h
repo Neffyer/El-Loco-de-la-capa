@@ -1,6 +1,7 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
+#include "App.h"
 #include "Entity.h"
 #include "Point.h"
 #include "SDL/include/SDL.h"
@@ -13,7 +14,7 @@ class Player : public Entity
 public:
 
 	Player();
-	
+
 	virtual ~Player();
 
 	bool Awake();
@@ -41,8 +42,13 @@ public:
 	float starty;
 	uint jumpFx = 0;
 	uint attackFx = 0;
+	uint coinFx = 0;
+	uint hitFx = 0;
+	uint hpFx = 0;
 
 	PhysBody* pbody;
+	int hits;
+	int coins;
 
 	int pickCoinFxId;
 

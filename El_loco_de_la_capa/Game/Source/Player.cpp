@@ -12,6 +12,7 @@
 #include "Window.h"
 #include "Animation.h"
 #include "FadeToBlack .h"
+#include "Item.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -151,6 +152,9 @@ bool Player::Start() {
 
 	jumpFx = app->audio->LoadFx("Assets/Audio/Fx/JumpFx.wav");
 	attackFx = app->audio->LoadFx("Assets/Audio/Fx/AttackFx.wav");
+	coinFx = app->audio->LoadFx("Assets/Audio/Fx/coinFx.wav");
+	hitFx = app->audio->LoadFx("Assets/Audio/Fx/hitFx.wav");
+	hpFx = app->audio->LoadFx("Assets/Audio/Fx/hpFx.wav");
 
 	return true;
 }
@@ -299,6 +303,7 @@ bool Player::Update()
 			app->render->camera.y = 0;
 			app->scene->player->playerAlive = true;
 			app->scene->player->idle = true;
+			app->scene->player->hits = 0;
 			app->scene->player->pbody->body->SetTransform({ PIXEL_TO_METERS(startx),PIXEL_TO_METERS(starty) }, 0);
 		}
 
@@ -376,12 +381,36 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	switch (physB->ctype)
 	{
-	case ColliderType::ITEM:
-		LOG("Collision ITEM");
+	case ColliderType::COIN:
+		LOG("Collision COIN");
+		app->audio->PlayFx(coinFx);
+		coins = coins++;
+		break;
+	case ColliderType::LIFE:
+		LOG("Collision LIFE");
+		app->audio->PlayFx(hpFx);
+		if (hits > 0) app->scene->player->hits--;
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if (!godMode) playerAlive = false;
+
+		app->audio->PlayFx(hitFx);
+
+		if (hits <= 2) hits++;
+
+		if (playerAlive && hits > 2) {
+
+			if (!idle) {
+				currentAnimation = &DieRight;
+				playerAlive = false;
+			}
+			else {
+
+				currentAnimation = &DieLeft;
+				playerAlive = false;
+			}
+		}
+
 		break;
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
@@ -393,7 +422,22 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::DEATH:
 		LOG("Collision DEATH");
-		if(!godMode) playerAlive = false;
+		
+		hits = 3;
+
+		if (playerAlive && hits > 2) {
+
+			if (!idle) {
+				currentAnimation = &DieRight;
+				playerAlive = false;
+			}
+			else {
+
+				currentAnimation = &DieLeft;
+				playerAlive = false;
+			}
+		}
+
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
